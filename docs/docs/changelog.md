@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Added a small [public API](reference/public-api.md)
+  (`app.plugins.plugins['checklist-status-icons'].api`) so another plugin can
+  resolve the same status decoration this plugin renders for a given task,
+  without reimplementing assignment resolution. Built to support
+  [Loud Outline](https://danrfletcher.github.io/obsidian-loud-outline/)
+  matching its file-tree checkbox icons to whatever this plugin renders in
+  the note.
+
 ## 0.1.1
 
 - Renamed the plugin to **Checklist Status Sets** (from "Checklist Status
