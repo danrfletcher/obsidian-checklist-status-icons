@@ -1,9 +1,10 @@
 # Public API (for plugin developers)
 
-Checklist Status Sets exposes a small read-only API so another plugin can
-find out what status decoration (if any) it would render for a given task —
-without reimplementing assignment resolution or reaching into this plugin's
-own data.
+Checklist Status Sets exposes a small API so another plugin can find out
+what status decoration (if any) it would render for a given task, and — if
+it wants tasks in its own UI to actually be changeable — cycle or open the
+picker for that task's status, without reimplementing assignment resolution,
+marker encoding, or reaching into this plugin's own data.
 
 !!! warning "Unstable"
     This is a young, hand-rolled contract — no semver package, no
@@ -40,6 +41,14 @@ interface ChecklistStatusIconsPublicApi {
     isGlowEnabled(): boolean;
 
     onChange(callback: () => void): () => void;
+
+    cycleTaskStatus(path: string, lineNumber: number): Promise<void>;
+
+    openTaskStatusPopup(
+        anchor: HTMLElement,
+        path: string,
+        lineNumber: number
+    ): Promise<void>;
 }
 
 interface TaskStatusDecoration {
@@ -73,9 +82,21 @@ interface TaskStatusDecoration {
   changed upstream in Status Sets. Re-resolve whatever you need via
   `getStatusDecoration` above. Returns an unsubscribe function; call it from
   your plugin's `onunload`.
+- **`cycleTaskStatus(path, lineNumber)`** cycles that task to the next status
+  in its governing set's order, wrapping after the last — the same action
+  this plugin's own dots perform on left-click. Writes via the file's open
+  editor if it happens to be open (keeping cursor position/undo history
+  intact), otherwise directly to disk, so a consumer isn't limited to tasks
+  in the currently-active file. No-op if no assignment covers that task.
+- **`openTaskStatusPopup(anchor, path, lineNumber)`** opens Status Sets' own
+  status-change popup for that task, anchored to `anchor` — the same popup
+  this plugin's own dots open on right-click, so a consumer's UI stays
+  visually and behaviorally identical rather than reimplementing it. No-op
+  if no assignment covers that task.
 
 ## What this API deliberately doesn't do
 
-- No write access. Assignments and status sets are read-only from the outside.
-- No interaction hooks (cycling status, opening the popup) — those are this
-  plugin's own note-content feature, not exposed for reuse yet.
+- No access to status sets or assignments themselves beyond what
+  `getStatusDecoration` resolves for one task at a time — a consumer reads
+  and changes individual task status, it doesn't manage status sets or
+  assignments (that's this plugin's and Status Sets' own settings UI).

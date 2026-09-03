@@ -3,10 +3,9 @@ import type { EditorView } from "@codemirror/view";
 import { DataStore } from "./dataStore";
 import { StatusSetsBridge } from "./statusSetsBridge";
 import { AssignmentResolver } from "./assignmentResolver";
-import { Assignment } from "./types";
-import { StatusDefinition, StatusSet } from "./statusSetsTypes";
-import { isTaskLine, parseTaskLine, withMarker } from "./statusMarker";
+import { isTaskLine, parseTaskLine } from "./statusMarker";
 import { resolveDecoration } from "./decorationResolver";
+import { cycleTaskStatus, openTaskStatusPopupAction } from "./taskActions";
 
 const DOT_CLASS = "csi-dot";
 const DECORATED_ATTR = "data-csi-decorated";
@@ -188,14 +187,6 @@ export class TaskPatch {
 		return null;
 	}
 
-	private statusForMarker(statusSet: StatusSet, marker: string): StatusDefinition | undefined {
-		if (marker === " ") {
-			return statusSet.statuses.find((s) => s.id === statusSet.defaultStatusId);
-		}
-		const statusId = this.dataStore.getStatusIdForChar(marker);
-		return statusSet.statuses.find((s) => s.id === statusId);
-	}
-
 	// ---------- Interaction ----------
 	// Mousedown, not click/dblclick — same rationale as Status Sets' ExplorerPatch
 	// (some Electron/input-method combinations never synthesize click at all).
@@ -226,56 +217,30 @@ export class TaskPatch {
 		);
 	}
 
-	private dotTarget(dot: HTMLElement): { file: TFile; lineNumber: number; assignment: Assignment; statusSet: StatusSet; view: MarkdownView } | null {
+	private dotTarget(dot: HTMLElement): { file: TFile; lineNumber: number } | null {
 		const path = dot.dataset.csiFile;
 		const lineNumber = Number(dot.dataset.csiLine);
-		const assignmentId = dot.dataset.csiAssignment;
-		if (!path || Number.isNaN(lineNumber) || !assignmentId) return null;
+		if (!path || Number.isNaN(lineNumber)) return null;
 		const file = this.app.vault.getAbstractFileByPath(path);
 		if (!(file instanceof TFile)) return null;
-		const assignment = this.dataStore.getAssignment(assignmentId);
-		if (!assignment) return null;
-		const statusSet = this.statusSets.getApi()?.getStatusSet(assignment.statusSetId);
-		if (!statusSet) return null;
-		const view = this.leafViews.get(dot.closest(".workspace-leaf-content") as HTMLElement);
-		if (!view) return null;
-		return { file, lineNumber, assignment, statusSet, view };
+		return { file, lineNumber };
 	}
+
+	// Both actions below delegate to taskActions.ts, shared with the public
+	// API's cycleTaskStatus/openTaskStatusPopup (e.g. Loud Outline's file-tree
+	// icons) so this plugin's own dots and any other consumer always write
+	// the exact same encoding.
 
 	private cycleStatus(dot: HTMLElement): void {
 		const target = this.dotTarget(dot);
 		if (!target) return;
-		const { view, lineNumber, statusSet } = target;
-		const line = view.editor.getLine(lineNumber);
-		const parsed = parseTaskLine(line);
-		if (!parsed) return;
-		const currentStatus = this.statusForMarker(statusSet, parsed.marker);
-		const currentIndex = currentStatus ? statusSet.statuses.findIndex((s) => s.id === currentStatus.id) : -1;
-		const next = statusSet.statuses[(currentIndex + 1) % statusSet.statuses.length];
-		this.applyStatus(view, lineNumber, statusSet, next);
+		void cycleTaskStatus(this.app, this.resolver, this.dataStore, this.statusSets, target.file, target.lineNumber);
 	}
 
 	private openPopupFor(dot: HTMLElement, evt: MouseEvent): void {
 		const target = this.dotTarget(dot);
 		if (!target) return;
-		const { view, lineNumber, statusSet } = target;
-		const line = view.editor.getLine(lineNumber);
-		const parsed = parseTaskLine(line);
-		if (!parsed) return;
-		const currentStatus = this.statusForMarker(statusSet, parsed.marker);
-		this.statusSets.getApi()?.openStatusPopup({
-			anchor: anchorAt(dot, evt),
-			statusSet,
-			currentStatusId: currentStatus?.id ?? "",
-			onSelect: (status) => this.applyStatus(view, lineNumber, statusSet, status),
-		});
-	}
-
-	private applyStatus(view: MarkdownView, lineNumber: number, statusSet: StatusSet, status: StatusDefinition): void {
-		const isDefault = status.id === statusSet.defaultStatusId;
-		const marker = isDefault ? " " : this.dataStore.getOrAssignStatusChar(status.id, status.label);
-		const line = view.editor.getLine(lineNumber);
-		view.editor.setLine(lineNumber, withMarker(line, marker));
+		void openTaskStatusPopupAction(this.app, this.resolver, this.dataStore, this.statusSets, anchorAt(dot, evt), target.file, target.lineNumber);
 	}
 }
 
