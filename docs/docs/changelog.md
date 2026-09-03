@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+- Fixed a regression where status dots stopped rendering on assigned tasks in
+  **Reading view** (Live Preview was unaffected). The CSS rule that hides the
+  native checkbox glyph once a task is decorated matched the wrong element,
+  so the checkbox stayed visible and rendered on top of the dot, hiding it
+  completely.
+
 ## 0.2.0
 
 - Added a small [public API](reference/public-api.md)

@@ -28,8 +28,10 @@
 		0 0 9px 3px currentColor;
 }
 
-/* The native checkbox glyph is fully replaced, not shown alongside our dot. */
-li.task-list-item[data-csi-decorated] > input.task-list-item-checkbox,
+/* The native checkbox glyph is fully replaced, not shown alongside our dot.
+   The attribute is set on the <input> itself (see TaskPatch.decorate), not
+   on its <li>/<label> ancestor, in both Reading view and Live Preview. */
+li.task-list-item > input.task-list-item-checkbox[data-csi-decorated],
 label.task-list-label input.task-list-item-checkbox[data-csi-decorated] {
 	display: none;
 }
