@@ -1,8 +1,9 @@
-import { App } from "obsidian";
+import { App, TFile } from "obsidian";
 import { AssignmentResolver } from "./assignmentResolver";
 import { DataStore } from "./dataStore";
 import { StatusSetsBridge } from "./statusSetsBridge";
 import { resolveDecoration } from "./decorationResolver";
+import { cycleTaskStatus, openTaskStatusPopupAction } from "./taskActions";
 
 /**
  * Public contract for `app.plugins.plugins['checklist-status-icons'].api`,
@@ -39,6 +40,24 @@ export interface ChecklistStatusIconsPublicApi {
 	isGlowEnabled(): boolean;
 	/** Fires on anything that could change a previously-resolved decoration: assignment edits, Status Sets' status/color/Glow edits. Returns an unsubscribe function. */
 	onChange(callback: () => void): () => void;
+	/**
+	 * Cycles the task at `path`:`lineNumber` to the next status in its
+	 * governing set's order, wrapping after the last — the same action this
+	 * plugin's own dots perform on left-click. No-op (resolves with nothing
+	 * changed) if no assignment covers that task or `path` doesn't resolve to
+	 * a file. Writes via the file's open editor if it happens to be open
+	 * (keeping cursor position/undo history intact), otherwise directly to
+	 * disk — a consumer isn't limited to tasks in the active file.
+	 */
+	cycleTaskStatus(path: string, lineNumber: number): Promise<void>;
+	/**
+	 * Opens Status Sets' own status-change popup for the task at
+	 * `path`:`lineNumber`, anchored to `anchor` — the same popup this
+	 * plugin's own dots open on right-click, so a consumer's UI stays
+	 * visually/behaviorally identical. No-op if no assignment covers that
+	 * task or `path` doesn't resolve to a file.
+	 */
+	openTaskStatusPopup(anchor: HTMLElement, path: string, lineNumber: number): Promise<void>;
 }
 
 export const CHECKLIST_STATUS_ICONS_PLUGIN_ID = "checklist-status-icons";
@@ -66,6 +85,18 @@ export class ChecklistStatusIconsApi implements ChecklistStatusIconsPublicApi {
 	onChange(callback: () => void): () => void {
 		this.changeListeners.add(callback);
 		return () => this.changeListeners.delete(callback);
+	}
+
+	async cycleTaskStatus(path: string, lineNumber: number): Promise<void> {
+		const file = this.app.vault.getAbstractFileByPath(path);
+		if (!(file instanceof TFile)) return;
+		await cycleTaskStatus(this.app, this.resolver, this.dataStore, this.statusSets, file, lineNumber);
+	}
+
+	async openTaskStatusPopup(anchor: HTMLElement, path: string, lineNumber: number): Promise<void> {
+		const file = this.app.vault.getAbstractFileByPath(path);
+		if (!(file instanceof TFile)) return;
+		await openTaskStatusPopupAction(this.app, this.resolver, this.dataStore, this.statusSets, anchor, file, lineNumber);
 	}
 
 	/** Called by main.ts on every event that already triggers TaskPatch.refreshAll(), so API consumers stay in sync with what's rendered in-note without duplicating the subscription plumbing. */
