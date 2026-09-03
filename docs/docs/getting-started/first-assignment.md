@@ -6,7 +6,7 @@ This assumes you already have at least one status set defined in
 
 ## Assign a whole file
 
-1. Settings → Checklist Status Icons.
+1. Settings → Checklist Status Sets.
 2. Under **Assign a file or block**, type (or autocomplete) a note's path,
    e.g. `Projects/Website Redesign.md`.
 3. Pick a status set from the dropdown.

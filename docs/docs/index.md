@@ -1,4 +1,4 @@
-# Checklist Status Icons
+# Checklist Status Sets
 
 A companion plugin to [Status Sets](https://danrfletcher.github.io/obsidian-file-folder-status-icons/) —
 applies the same reusable status sets you define there to checklist items

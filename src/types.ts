@@ -1,5 +1,5 @@
 /**
- * Data model for Checklist Status Icons.
+ * Data model for Checklist Status Sets.
  *
  * Everything here is persisted in this plugin's own data.json (via
  * Plugin#loadData / Plugin#saveData) — a separate file from Status Sets'

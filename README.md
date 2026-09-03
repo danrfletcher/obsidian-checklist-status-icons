@@ -1,4 +1,4 @@
-# Checklist Status Icons
+# Checklist Status Sets
 
 📖 **[Full documentation](https://danrfletcher.github.io/obsidian-checklist-status-icons/)**
 
@@ -40,7 +40,7 @@ purpose.
 
 1. Define a status set in Status Sets first (Settings → Status Sets → New
    status set), if you haven't already.
-2. Settings → Checklist Status Icons → **Assign a file or block** → type a
+2. Settings → Checklist Status Sets → **Assign a file or block** → type a
    note's path, pick a status set, **Assign**.
 3. Open the note. Left-click a task's dot to cycle status; right-click for
    the full picker.
@@ -51,7 +51,7 @@ purpose.
 
 ### From Obsidian
 
-Settings → Community plugins → Browse → search "Checklist Status Icons" →
+Settings → Community plugins → Browse → search "Checklist Status Sets" →
 Install → Enable.
 
 ### Manually

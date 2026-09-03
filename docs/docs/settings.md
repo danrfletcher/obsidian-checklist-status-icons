@@ -1,6 +1,6 @@
 # Settings Reference
 
-Settings → Checklist Status Icons.
+Settings → Checklist Status Sets.
 
 ## Dependency notice
 
