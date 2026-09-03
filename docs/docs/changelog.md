@@ -1,0 +1,24 @@
+# Changelog
+
+## 0.1.0
+
+Initial release.
+
+- **Three assignment scopes**: whole file, a block (with optional inherit to
+  subtasks), or a heading section.
+- Status is encoded as a single character in the task's own brackets
+  (`- [ ]` for the default status, `- [X]` for every other status),
+  auto-assigned per status id — see
+  [Markdown Status Marker](reference/markdown-marker.md) for why, after
+  testing a more readable alternative live and finding it isn't recognized
+  as a task at all.
+- Status icons render identically to Status Sets' file-tree dots (including
+  Glow), in both Live Preview and Reading view.
+- Left-click cycles status; right-click opens Status Sets' own status-change
+  popup, reused as-is via its new public API.
+- **Hide completed** actually removes completed tasks from the rendered
+  note, not just visually.
+- File/block/heading target autocomplete, including automatic block-id
+  generation for a block that doesn't have one yet.
+- Assignments survive file renames and (for block scope) the block moving
+  anywhere in the file.

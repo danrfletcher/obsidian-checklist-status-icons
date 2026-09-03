@@ -1,0 +1,108 @@
+/* Status dot — deliberately identical in shape/behavior to Status Sets' .ffsi-dot
+   (same fixes baked in: dark ring for visibility on pale colors on any theme,
+   box-shadow-only glow so it never shifts line height). */
+.csi-dot {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	margin-right: 6px;
+	cursor: pointer;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+	flex-shrink: 0;
+}
+.csi-dot:hover {
+	transform: scale(1.15);
+}
+
+.csi-glow .csi-dot {
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.15),
+		0 0 3px 1px currentColor,
+		0 0 7px 2px currentColor;
+}
+.csi-glow .csi-dot:hover {
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.15),
+		0 0 4px 1px currentColor,
+		0 0 9px 3px currentColor;
+}
+
+/* The native checkbox glyph is fully replaced, not shown alongside our dot. */
+li.task-list-item[data-csi-decorated] > input.task-list-item-checkbox,
+label.task-list-label input.task-list-item-checkbox[data-csi-decorated] {
+	display: none;
+}
+
+/* Hide-completed removes the task from render entirely, not just visually. */
+.csi-hidden-completed.csi-hidden-completed {
+	display: none;
+}
+
+/* Popups (status picker, path/target autocomplete) — same shape as Status Sets' .ffsi-popup. */
+.csi-popup {
+	position: fixed;
+	z-index: var(--layer-menu);
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	box-shadow: var(--shadow-s);
+	max-height: 300px;
+	overflow-y: auto;
+	padding: 4px;
+}
+.csi-popup-item {
+	display: flex;
+	align-items: center;
+	padding: 4px 8px;
+	border-radius: var(--radius-s);
+	cursor: pointer;
+}
+.csi-popup-item:hover,
+.csi-popup-item.is-active {
+	background: var(--background-modifier-hover);
+}
+.csi-popup-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.csi-autocomplete {
+	max-height: 220px;
+}
+.csi-menu-anchor {
+	pointer-events: none;
+}
+
+.csi-swatch {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	margin-right: 6px;
+	flex-shrink: 0;
+}
+
+/* Settings tab */
+.csi-assignment-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: 4px 12px;
+	margin-bottom: 8px;
+}
+
+.csi-support-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.csi-support-btn {
+	padding: 6px 12px;
+}
+.csi-support-btn-coffee.csi-support-btn-coffee {
+	background: #ffdd00;
+	color: #000000;
+}
+.csi-support-btn-coffee.csi-support-btn-coffee:hover {
+	background: #ffe94d;
+}
