@@ -6,8 +6,34 @@ status sets to checklist items inside notes (whole file / block / heading scope)
 Plugin id: `checklist-status-icons`. Repo: `obsidian-checklist-status-icons`.
 
 Process reference: see conversation — build end to end, test visually in the
-`desktop-obsidian-2` container, PR + GitHub release, docs site, stop for user
-testing, then Obsidian marketplace submission + automated review fixups.
+`desktop-obsidian-4` container (own instance — `desktop-obsidian-2` was
+already in use by another session), PR + GitHub release, docs site, stop for
+user testing, then Obsidian marketplace submission + automated review fixups.
+
+## Status as of latest session
+
+**Solid and live-verified, both Live Preview and genuine Reading View:**
+- File/block/heading assignment resolution, including block
+  inherit-to-subtasks and heading-range nesting (§ Scope Test note).
+- Left-click cycle (wraps), right-click → Status Sets' real popup.
+- Hide-completed, Glow (live cross-plugin updates).
+- Block-id autocomplete/generation, target autocomplete (files/blocks/headings).
+- A real bug was found and fixed here: Reading View's `data-line` attribute on
+  task checkboxes is relative to the nearest preceding heading, not an
+  absolute document line — silently decorated the wrong line entirely. Fixed
+  by zipping rendered `<li>`s to `MetadataCache.listItems` (absolute lines)
+  by DOM order instead. See the commit for detail; re-verify this is still
+  correct if Obsidian's Reading View markup changes in a future version.
+
+**Not implemented:** truncation-group collapse/expand. A first attempt had a
+real bug (grouping counted stale clone dots / had a related decoration
+timing issue that turned out to trace back to the data-line bug above) and
+was fully reverted rather than shipped half-working. Worth retrying now that
+the underlying line-resolution bug is fixed — that may have been the actual
+root cause of the earlier flakiness.
+
+**Not started:** the edge-case sweep in §7, docs site, GitHub Discussions,
+PR for this repo, release, Obsidian marketplace submission.
 
 ---
 
