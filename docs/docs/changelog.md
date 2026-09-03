@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+- Renamed the plugin to **Checklist Status Sets** (from "Checklist Status
+  Icons") — matches the companion plugin's own name, "File Folder Status
+  Sets", as one recognizable brand across both. The plugin id
+  (`checklist-status-icons`) and repo are unchanged; only the display name.
+
 ## 0.1.0
 
 Initial release.

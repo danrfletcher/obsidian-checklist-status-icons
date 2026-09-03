@@ -1,4 +1,4 @@
-# Checklist Status Icons — Build Task List
+# Checklist Status Sets — Build Task List
 
 Companion plugin to Status Sets (`file-folder-status-icons`). Applies the same
 status sets to checklist items inside notes (whole file / block / heading scope).
@@ -67,7 +67,7 @@ PR for this repo, release, Obsidian marketplace submission.
 **Acceptance criteria**
 - [ ] Repo `obsidian-checklist-status-icons` created, mirroring the existing
       repo's toolchain (esbuild, tsconfig, eslint, manifest.json id
-      `checklist-status-icons`, name "Checklist Status Icons").
+      `checklist-status-icons`, name "Checklist Status Sets").
 - [ ] `package.json`/`manifest.json`/`versions.json` wired for the same
       version-bump flow as the existing plugin.
 - [ ] On load: if `file-folder-status-icons` isn't installed+enabled, plugin
@@ -201,11 +201,11 @@ PR for this repo, release, Obsidian marketplace submission.
 - [ ] Heading assignment where heading text is duplicated elsewhere in the
       file — first match / documented behavior, no crash.
 - [ ] File containing thousands of tasks — sanity-check render performance.
-- [ ] Status Sets disabled *after* Checklist Status Icons already has
+- [ ] Status Sets disabled *after* Checklist Status Sets already has
       assignments configured — settings hide gracefully, previously-rendered
       icons don't crash the editor.
 - [ ] Vault with the dependency plugin missing entirely (fresh install order:
-      Checklist Status Icons installed before Status Sets) — no crash on load.
+      Checklist Status Sets installed before Status Sets) — no crash on load.
 
 ---
 

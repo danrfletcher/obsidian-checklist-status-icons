@@ -5,14 +5,14 @@
 This plugin applies status sets you define in
 [Status Sets](https://danrfletcher.github.io/obsidian-file-folder-status-icons/)
 (`file-folder-status-icons`) — install and enable that first. If it isn't
-installed or enabled, Checklist Status Icons' settings tab shows a prompt
+installed or enabled, Checklist Status Sets' settings tab shows a prompt
 instead of its normal options, with a button that jumps straight to
 Community Plugins.
 
 ## From Obsidian
 
 1. Settings → Community plugins → Browse.
-2. Search for **Checklist Status Icons**.
+2. Search for **Checklist Status Sets**.
 3. Install, then enable it.
 
 ## Manually
