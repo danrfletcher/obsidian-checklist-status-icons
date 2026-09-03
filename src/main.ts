@@ -34,6 +34,19 @@ export default class ChecklistStatusIconsPlugin extends Plugin {
 			}),
 		);
 
+		// MetadataCache re-indexes a file asynchronously after any edit (e.g. a
+		// block id we just inserted, or a heading rename) — resolving governing
+		// assignments right after a write can run before the cache catches up.
+		// Re-decorate on every cache update rather than trying to chain awaits
+		// through every call site that edits a file.
+		this.registerEvent(this.app.metadataCache.on("changed", () => this.taskPatch.refreshAll()));
+		// On a fresh app/plugin reload, onLayoutReady can fire before the
+		// vault's *initial* metadata resolution pass has finished (that's a
+		// separate, one-time "resolved" event) — block/heading assignments in
+		// already-open notes would silently render as plain checkboxes until
+		// something else happened to trigger a redecoration. Catch that case too.
+		this.registerEvent(this.app.metadataCache.on("resolved", () => this.taskPatch.refreshAll()));
+
 		// Status Sets may load after this plugin, or the user may toggle Glow /
 		// edit a status set while a note is open — re-render live either way.
 		this.registerInterval(

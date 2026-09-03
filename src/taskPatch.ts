@@ -90,11 +90,21 @@ export class TaskPatch {
 		view.containerEl.toggleClass("csi-glow", glow);
 
 		// Reading view: <input class="task-list-item-checkbox" data-line="N"> directly inside <li class="task-list-item">.
-		view.containerEl.querySelectorAll("li.task-list-item > input.task-list-item-checkbox").forEach((el) => {
+		// N is NOT an absolute document line number — verified live it's local to
+		// whatever section Obsidian's renderer chunked the content into (resets
+		// to 0 after each heading), so reading it directly maps checkboxes to the
+		// wrong line entirely. Match each rendered <li> to MetadataCache's own
+		// listItems (which does have absolute lines) by DOM order instead — both
+		// are produced top-to-bottom in document order, so a straight zip lines
+		// them up correctly without needing to decode data-line's real meaning.
+		const taskLines = (this.app.metadataCache.getFileCache(file)?.listItems ?? [])
+			.filter((li) => li.task !== undefined)
+			.map((li) => li.position.start.line);
+		Array.from(view.containerEl.querySelectorAll("li.task-list-item > input.task-list-item-checkbox")).forEach((el, index) => {
 			const input = el as HTMLInputElement;
-			const lineAttr = input.dataset.line;
-			if (lineAttr == null) return;
-			this.decorate(input, file, Number(lineAttr));
+			const lineNumber = taskLines[index];
+			if (lineNumber == null) return;
+			this.decorate(input, file, lineNumber);
 		});
 
 		// Live Preview: <input class="task-list-item-checkbox"> inside <label class="task-list-label">, inside a .cm-line.
