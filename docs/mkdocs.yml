@@ -1,0 +1,54 @@
+site_name: Checklist Status Icons
+site_description: Apply Status Sets' reusable status sets to checklist items inside your notes — per file, block, or heading — with the same traffic-light icons, colors, and Glow used in the file tree.
+site_url: https://danrfletcher.github.io/obsidian-checklist-status-icons/
+repo_url: https://github.com/danrfletcher/obsidian-checklist-status-icons
+repo_name: danrfletcher/obsidian-checklist-status-icons
+edit_uri: edit/main/docs/docs/
+markdown_extensions:
+  - abbr
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist
+  - tables
+  - toc:
+      permalink: true
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+nav:
+  - Overview: 'index.md'
+  - Getting Started:
+      - Installation: 'getting-started/installation.md'
+      - Your First Assignment: 'getting-started/first-assignment.md'
+  - Reference:
+      - Assignment Scopes: 'reference/scopes.md'
+      - Markdown Status Marker: 'reference/markdown-marker.md'
+  - Settings Reference: 'settings.md'
+  - FAQ and Troubleshooting: 'faq.md'
+  - Changelog: 'changelog.md'
+plugins:
+  - search

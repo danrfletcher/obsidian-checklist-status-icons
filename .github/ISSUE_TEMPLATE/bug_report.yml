@@ -28,7 +28,7 @@ body:
     attributes:
       label: Plugin version
       description: Settings → Community plugins → Checklist Status Icons.
-      placeholder: e.g. 0.4.0
+      placeholder: e.g. 0.1.0
     validations:
       required: true
 
