@@ -47,6 +47,7 @@ nav:
   - Reference:
       - Assignment Scopes: 'reference/scopes.md'
       - Markdown Status Marker: 'reference/markdown-marker.md'
+      - Public API: 'reference/public-api.md'
   - Settings Reference: 'settings.md'
   - FAQ and Troubleshooting: 'faq.md'
   - Changelog: 'changelog.md'

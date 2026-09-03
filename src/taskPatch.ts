@@ -6,6 +6,7 @@ import { AssignmentResolver } from "./assignmentResolver";
 import { Assignment } from "./types";
 import { StatusDefinition, StatusSet } from "./statusSetsTypes";
 import { isTaskLine, parseTaskLine, withMarker } from "./statusMarker";
+import { resolveDecoration } from "./decorationResolver";
 
 const DOT_CLASS = "csi-dot";
 const DECORATED_ATTR = "data-csi-decorated";
@@ -138,14 +139,14 @@ export class TaskPatch {
 			if (input.hasAttribute(DECORATED_ATTR)) this.undecorate(input);
 			return;
 		}
-		const statusSet = this.statusSets.getApi()?.getStatusSet(assignment.statusSetId);
-		if (!statusSet) return;
 
 		const parsed = parseTaskLine(line);
 		if (!parsed) return;
-		const status = this.statusForMarker(statusSet, parsed.marker);
+		// Shared with the public API (see decorationResolver.ts) so a consumer
+		// calling getStatusDecoration() sees exactly what's rendered here.
+		const decoration = resolveDecoration(this.app, this.resolver, this.dataStore, this.statusSets, file.path, lineNumber, parsed.marker);
 
-		if (assignment.hideCompleted && status?.isCompleted) {
+		if (decoration?.hidden) {
 			input.toggleAttribute(DECORATED_ATTR, true);
 			const container = input.closest("li.task-list-item, label.task-list-label") as HTMLElement | null;
 			container?.toggleClass("csi-hidden-completed", true);
@@ -160,11 +161,11 @@ export class TaskPatch {
 			dot = createSpan({ cls: DOT_CLASS });
 			container?.insertBefore(dot, container.firstChild);
 		}
-		dot.setCssStyles({ backgroundColor: status?.color ?? "#888888", color: status?.color ?? "#888888" });
+		dot.setCssStyles({ backgroundColor: decoration?.color ?? "#888888", color: decoration?.color ?? "#888888" });
 		dot.dataset.csiFile = file.path;
 		dot.dataset.csiLine = String(lineNumber);
 		dot.dataset.csiAssignment = assignment.id;
-		dot.setAttribute("aria-label", status?.label ?? "No status");
+		dot.setAttribute("aria-label", decoration?.label ?? "No status");
 		input.toggleAttribute(DECORATED_ATTR, true);
 	}
 
