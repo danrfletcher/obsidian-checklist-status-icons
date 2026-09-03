@@ -1,0 +1,10 @@
+{
+	"id": "checklist-status-icons",
+	"name": "Checklist Status Icons",
+	"version": "0.1.0",
+	"minAppVersion": "1.4.16",
+	"description": "Apply Status Sets' reusable status sets to checklist items inside your notes — per file, block, or heading — with the same traffic-light icons, colors, and Glow used in the file tree.",
+	"author": "Dan Fletcher",
+	"authorUrl": "https://github.com/danrfletcher",
+	"isDesktopOnly": true
+}
