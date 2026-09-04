@@ -41,7 +41,9 @@ export class TaskPatch {
 		for (const observer of this.observers.values()) observer.disconnect();
 		this.observers.clear();
 		for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
+			if ((leaf as unknown as { isDeferred?: boolean }).isDeferred) continue;
 			const view = leaf.view as MarkdownView;
+			if (!view.containerEl) continue;
 			view.containerEl.querySelectorAll(`.${DOT_CLASS}`).forEach((el) => el.remove());
 			view.containerEl.querySelectorAll(`[${DECORATED_ATTR}]`).forEach((el) => el.removeAttribute(DECORATED_ATTR));
 		}
@@ -50,25 +52,46 @@ export class TaskPatch {
 	/** Re-runs decoration on every open markdown view — call after any setting/assignment change (e.g. Glow toggled in Status Sets). */
 	refreshAll(): void {
 		for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
+			if ((leaf as unknown as { isDeferred?: boolean }).isDeferred) continue;
 			this.processView(leaf.view as MarkdownView);
 		}
 	}
 
 	private attachAll(): void {
 		for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
-			this.attachToLeaf(leaf);
+			this.safeAttachToLeaf(leaf);
 		}
 		this.app.workspace.on("active-leaf-change", (leaf) => {
-			if (leaf && leaf.view instanceof MarkdownView) this.attachToLeaf(leaf);
+			if (leaf && leaf.view instanceof MarkdownView) this.safeAttachToLeaf(leaf);
 		});
 		this.app.workspace.on("layout-change", () => {
-			for (const leaf of this.app.workspace.getLeavesOfType("markdown")) this.attachToLeaf(leaf);
+			for (const leaf of this.app.workspace.getLeavesOfType("markdown")) this.safeAttachToLeaf(leaf);
 		});
+	}
+
+	/**
+	 * `attachToLeaf` can throw for a single bad leaf (see below) — wrapped so
+	 * that one leaf's failure never aborts the whole batch and leaves every
+	 * other leaf, including fully-loaded ones, unobserved.
+	 */
+	private safeAttachToLeaf(leaf: WorkspaceLeaf): void {
+		try {
+			this.attachToLeaf(leaf);
+		} catch (err) {
+			console.error("Checklist Status Sets: failed to attach to leaf", err);
+		}
 	}
 
 	private attachToLeaf(leaf: WorkspaceLeaf): void {
 		if (this.observers.has(leaf)) return;
+		// Obsidian's "lazy-load-inactive-tabs" feature can hand back leaves
+		// whose view is still the deferred placeholder — `contentEl` is
+		// undefined on those, which throws inside MutationObserver.observe
+		// below. Skip them here; they get attached for real via the
+		// active-leaf-change/layout-change listeners once the user opens them.
+		if ((leaf as unknown as { isDeferred?: boolean }).isDeferred) return;
 		const view = leaf.view as MarkdownView;
+		if (!view.contentEl) return;
 		this.leafViews.set(view.containerEl, view);
 
 		const observer = new MutationObserver(() => this.processView(view));

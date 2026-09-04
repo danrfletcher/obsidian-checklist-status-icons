@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.2
+
+- Fixed the plugin never decorating any note, in any file, for the entire
+  session, whenever two or more markdown tabs were open and at least one
+  wasn't the active tab. Obsidian's "lazy-load-inactive-tabs" feature (on
+  by default) hands back a deferred placeholder view for background
+  leaves, whose `contentEl` isn't set yet; attaching a `MutationObserver`
+  to it threw, and because the attach loop had no per-leaf error handling,
+  that one bad leaf aborted the whole batch — so leaves with real,
+  already-rendered content never got attached either. Deferred leaves are
+  now skipped (they attach normally once the user switches to them) and
+  each leaf's attach is wrapped so one leaf's failure can't take down the
+  rest.
+
 ## 0.2.1
 
 - Fixed a regression where status dots stopped rendering on assigned tasks in
