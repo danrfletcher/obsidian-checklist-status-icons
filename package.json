@@ -1,6 +1,6 @@
 {
 	"name": "checklist-status-icons",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Apply Status Sets' reusable status sets to checklist items inside your notes — per file, block, or heading.",
 	"main": "main.js",
 	"scripts": {
