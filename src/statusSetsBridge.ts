@@ -18,6 +18,16 @@ function getPluginsInternal(app: App): PluginsInternal {
 	return (app as unknown as { plugins: PluginsInternal }).plugins;
 }
 
+/** Same rationale as PluginsInternal above — `app.setting` isn't public API either. */
+interface SettingInternal {
+	open(): void;
+	openTabById(id: string): void;
+}
+
+function getSettingInternal(app: App): SettingInternal | undefined {
+	return (app as unknown as { setting?: SettingInternal }).setting;
+}
+
 /**
  * Single point of contact with Status Sets. Everything about "is it
  * installed / enabled / does its API exist / is it new enough" lives here so
@@ -44,9 +54,8 @@ export class StatusSetsBridge {
 
 	/** Best-effort: opens Obsidian's Community Plugins browser so the user can find/enable Status Sets themselves. There's no public API to deep-link a search query into it. */
 	openCommunityPlugins(): void {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const setting = (this.app as any).setting;
-		setting?.open?.();
-		setting?.openTabById?.("community-plugins");
+		const setting = getSettingInternal(this.app);
+		setting?.open();
+		setting?.openTabById("community-plugins");
 	}
 }
