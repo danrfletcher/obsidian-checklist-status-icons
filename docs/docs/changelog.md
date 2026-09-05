@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.3
+
+- Fixed two issues flagged by the Obsidian community plugin directory's
+  automated review of 0.2.2: a raw `<h3>` heading in the settings tab
+  (should use `new Setting(containerEl).setName(...).setHeading()`, same
+  as every other heading in that view), and an `as any` cast onto
+  `app.setting` (undocumented internal API) — replaced with a narrowly
+  typed `SettingInternal` interface, matching the existing pattern already
+  used for `app.plugins` in the same file, so no lint suppression is
+  needed at all.
+
 ## 0.2.2
 
 - Fixed the plugin never decorating any note, in any file, for the entire

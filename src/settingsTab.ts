@@ -40,7 +40,7 @@ export class ChecklistSettingTab extends PluginSettingTab {
 	}
 
 	private renderDependencyNotice(containerEl: HTMLElement): void {
-		containerEl.createEl("h3", { text: "Status Sets required" });
+		new Setting(containerEl).setName("Status Sets required").setHeading();
 		containerEl.createEl("p", {
 			text: "Checklist Status Sets applies the status sets you define in Status Sets to checklist items inside your notes. Install and enable Status Sets first.",
 		});
