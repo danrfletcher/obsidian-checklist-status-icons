@@ -4,6 +4,7 @@ import { DataStore } from "./dataStore";
 import { StatusSetsBridge } from "./statusSetsBridge";
 import { StatusDefinition, StatusSet } from "./statusSetsTypes";
 import { parseTaskLine, withMarker } from "./statusMarker";
+import { statusForMarker } from "./decorationResolver";
 
 /**
  * Actually changing a task's status: resolving what it currently is, and
@@ -58,15 +59,9 @@ async function writeLine(app: App, file: TFile, lineNumber: number, newLine: str
 	});
 }
 
-function statusForMarker(dataStore: DataStore, statuses: StatusDefinition[], defaultStatusId: string, marker: string): StatusDefinition | undefined {
-	if (marker === " ") return statuses.find((s) => s.id === defaultStatusId);
-	const statusId = dataStore.getStatusIdForChar(marker);
-	return statuses.find((s) => s.id === statusId);
-}
-
 export interface ResolvedTaskStatus {
 	statusSet: StatusSet;
-	/** undefined if the marker doesn't map to any status in the set (e.g. an unmapped native "x", or an orphaned character). */
+	/** undefined if the marker doesn't map to any status in the set (e.g. an orphaned character, or an unmapped native "x" in a set with no single unambiguous completed status). */
 	currentStatus: StatusDefinition | undefined;
 }
 

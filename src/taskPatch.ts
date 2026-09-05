@@ -167,8 +167,17 @@ export class TaskPatch {
 		// Shared with the public API (see decorationResolver.ts) so a consumer
 		// calling getStatusDecoration() sees exactly what's rendered here.
 		const decoration = resolveDecoration(this.app, this.resolver, this.dataStore, this.statusSets, file.path, lineNumber, parsed.marker);
+		if (!decoration) {
+			// Assignment exists but the marker doesn't resolve to a real status
+			// (e.g. an orphaned character) - render as a plain, unmodified
+			// checkbox, exactly what getStatusDecoration() already returns for
+			// this same case, rather than a placeholder dot that visually
+			// disagrees with every other consumer of that API (e.g. Loud Outline).
+			if (input.hasAttribute(DECORATED_ATTR)) this.undecorate(input);
+			return;
+		}
 
-		if (decoration?.hidden) {
+		if (decoration.hidden) {
 			input.toggleAttribute(DECORATED_ATTR, true);
 			const container = input.closest("li.task-list-item, label.task-list-label") as HTMLElement | null;
 			container?.toggleClass("csi-hidden-completed", true);
@@ -183,11 +192,11 @@ export class TaskPatch {
 			dot = createSpan({ cls: DOT_CLASS });
 			container?.insertBefore(dot, container.firstChild);
 		}
-		dot.setCssStyles({ backgroundColor: decoration?.color ?? "#888888", color: decoration?.color ?? "#888888" });
+		dot.setCssStyles({ backgroundColor: decoration.color, color: decoration.color });
 		dot.dataset.csiFile = file.path;
 		dot.dataset.csiLine = String(lineNumber);
 		dot.dataset.csiAssignment = assignment.id;
-		dot.setAttribute("aria-label", decoration?.label ?? "No status");
+		dot.setAttribute("aria-label", decoration.label);
 		input.toggleAttribute(DECORATED_ATTR, true);
 	}
 
