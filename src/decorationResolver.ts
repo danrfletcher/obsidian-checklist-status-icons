@@ -54,7 +54,12 @@ export function resolveDecoration(
 	return { color: status.color, label: status.label, isCompleted: !!status.isCompleted, hidden };
 }
 
-function statusForMarker(
+/**
+ * Shared with taskActions.ts (cycling/applying a status writes and reads
+ * back through this exact same logic) so a task's rendered status and its
+ * "current status" for cycling purposes never disagree.
+ */
+export function statusForMarker(
 	dataStore: DataStore,
 	statuses: StatusDefinition[],
 	defaultStatusId: string,
@@ -64,5 +69,18 @@ function statusForMarker(
 		return statuses.find((s) => s.id === defaultStatusId);
 	}
 	const statusId = dataStore.getStatusIdForChar(marker);
-	return statuses.find((s) => s.id === statusId);
+	const mapped = statuses.find((s) => s.id === statusId);
+	if (mapped) return mapped;
+	// "x"/"X" is Obsidian's own native completed-checkbox marker - a task
+	// can carry it without ever having been cycled through this plugin (a
+	// native checkbox click, another plugin, etc.), so it won't have an
+	// entry in this vault's char map. Rather than fail to resolve entirely,
+	// treat it as whichever status in the set is marked completed, but only
+	// when that's unambiguous - if the set has none or more than one, there's
+	// no single right answer, so fall through to unresolved as before.
+	if (marker === "x" || marker === "X") {
+		const completed = statuses.filter((s) => s.isCompleted);
+		if (completed.length === 1) return completed[0];
+	}
+	return undefined;
 }

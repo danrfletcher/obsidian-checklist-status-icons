@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.4
+
+- Fixed tasks checked off natively (`- [x]`, e.g. by clicking Obsidian's own
+  checkbox rather than this plugin's dot) silently failing to resolve a
+  status and rendering a flat gray placeholder dot instead — indistinguishable
+  from a real status at a glance, but exposed as `undefined` (correctly) to
+  the public API, so Loud Outline's file-tree icons and interactivity
+  disagreed with what the note itself showed for the exact same task.
+  `"x"`/`"X"` now resolves to the assignment's status set's completed status
+  when there's exactly one unambiguous candidate, matching Obsidian's own
+  native completed-checkbox marker. Separately, when a marker genuinely can't
+  be resolved to any status (an orphaned character, or an ambiguous set with
+  no single completed status), the task now renders as a plain, unmodified
+  checkbox — matching what `getStatusDecoration()` already, correctly,
+  returned for that case — instead of a placeholder dot that visually
+  disagreed with every other consumer of that API.
+
 ## 0.2.3
 
 - Fixed two issues flagged by the Obsidian community plugin directory's
